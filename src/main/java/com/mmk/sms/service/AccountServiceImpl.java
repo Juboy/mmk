@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService, UserDetailsService{
 	
+	// TODO: Note that most hardcoded numbers here should be parsed in as env variables in the application.properties file	
+	
 	private final AccountRepository accountRepository;
 	private final PhoneNumberRepository phoneNumberRepository;
 	private final RemoteCache<String, Message> smsStopCache;
@@ -74,7 +76,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService{
 		//increment number of request from the FROM number
 		if(requestCache.containsKey(from)) {
 			Integer numRequests = requestCache.get(from);
-			if(numRequests >= 5) return Response.builder().error("limit reached for from "+ from).build();
+			if(numRequests >= 50) return Response.builder().error("limit reached for from "+ from).build();
 			requestCache.replace(from, requestCache.get(from) + 1, requestCache.getWithMetadata(from).getLifespan(), TimeUnit.SECONDS);
 		}else {
 			//save for 24 hours

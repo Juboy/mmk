@@ -48,3 +48,7 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+bootJar {
+    baseName = 'mmk'
+    version =  '1.0.0'
+}
