@@ -1,6 +1,11 @@
 package com.mmk.sms.service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import org.infinispan.client.hotrod.RemoteCache;
@@ -70,6 +75,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService{
 		Optional<PhoneNumber> phoneNumberOptional = phoneNumberRepository.findByAccountAndNumber(user.get().getId(), from);
 		if(!phoneNumberOptional.isPresent()) return Response.builder().error("from parameter not found").build();
 		
+		//check if any entry matches the in stop cache
 		String key = String.format("%s_%s", to, from);
 		if(smsStopCache.containsKey(key)) return Response.builder().error(String.format("sms from %s to %s blocked by STOP request", from, to)).build();
 		//check if number of requests from is already at it's threshold
@@ -77,20 +83,37 @@ public class AccountServiceImpl implements AccountService, UserDetailsService{
 		if(requestCache.containsKey(from)) {
 			Integer numRequests = requestCache.get(from);
 			if(numRequests >= 50) return Response.builder().error("limit reached for from "+ from).build();
-			requestCache.replace(from, requestCache.get(from) + 1, requestCache.getWithMetadata(from).getLifespan(), TimeUnit.SECONDS);
+			
+			
+			long expiry = calculateLifespan(requestCache.getWithMetadata(from).getCreated(), 
+					requestCache.getWithMetadata(from).getLifespan());
+			
+			requestCache.replace(from, requestCache.get(from) + 1, expiry, TimeUnit.SECONDS);
 		}else {
 			//save for 24 hours
 			requestCache.put(from, 1, 24, TimeUnit.HOURS);
 		}
-		
-		//check if any entry matches the in stop cache
-		
-		log.info(requestCache.getWithMetadata(from).getLifespan()+"");
-		log.info(requestCache.getWithMetadata(from).getCreated()+"");
+
 		
 		return Response.builder().message("outbound sms ok").build();
 	}
 
 	
+	private long calculateLifespan(long createdDate, long timespan) {
+		LocalDateTime triggerTime =
+		        LocalDateTime.ofInstant(Instant.ofEpochMilli(createdDate), 
+		                                TimeZone.getDefault().toZoneId());
+		
+		LocalDateTime expiryTime = triggerTime.plusSeconds(timespan);
+		
+		
+		LocalDateTime now = LocalDateTime.now();
+		
+		log.info(expiryTime.toString());
+		
+		return ChronoUnit.SECONDS.between(now, expiryTime);
+		
+		
+	}
 
 }

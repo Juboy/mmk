@@ -10,11 +10,15 @@ import javax.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
-@Builder
 @Entity
 @Table(name = "account")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Account implements UserDetails{
 	
 	/**

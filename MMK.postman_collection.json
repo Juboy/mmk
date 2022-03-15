@@ -1,0 +1,170 @@
+{
+	"info": {
+		"_postman_id": "52d2d3ca-7e28-4812-91d3-9a58809e91f8",
+		"name": "MMK",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonBody = JSON.parse(responseBody)",
+							"pm.environment.set(\"token\", jsonBody.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "$2a$04$QHEtEbyL7RQ3KWw25RZm2uBMAe28pS5o0atB055ncM2UNCrBPs3yS",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "easy",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "azr1",
+							"type": "default"
+						},
+						{
+							"key": "password",
+							"value": "20S0KPNOIM",
+							"type": "default"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "default"
+						},
+						{
+							"key": "client_id",
+							"value": "easy",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8096/oauth/token",
+					"host": [
+						"localhost"
+					],
+					"port": "8096",
+					"path": [
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Inbound",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer 932772bd-0a5b-49b0-80be-4d9a1665de98",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "from",
+							"value": "12345",
+							"type": "text"
+						},
+						{
+							"key": "to",
+							"value": "3253280315",
+							"type": "text"
+						},
+						{
+							"key": "text",
+							"value": "STOP",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8096/inbound/sms",
+					"host": [
+						"localhost"
+					],
+					"port": "8096",
+					"path": [
+						"inbound",
+						"sms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Outbound",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer a9eacdc6-f0dd-4f14-b0dd-b73d07c7733c",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "from",
+							"value": "4924195509194",
+							"type": "text"
+						},
+						{
+							"key": "to",
+							"value": "123",
+							"type": "text"
+						},
+						{
+							"key": "text",
+							"value": "STOP",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8096/outbound/sms",
+					"host": [
+						"localhost"
+					],
+					"port": "8096",
+					"path": [
+						"outbound",
+						"sms"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
